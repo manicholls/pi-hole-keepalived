@@ -17,6 +17,11 @@ sudo apt install keepalived
 
 create your keepalived config in /etc/keepalived.   You may need to change the interface to match the interface on your system.  Ex. use eth0 instead of ens18.
 ```
+vrrp_script chk_pihole {
+        script "/usr/local/bin/pihole/pihole status | grep Enabled"
+        interval 2
+}
+
 vrrp_instance VI_1 {
   interface ens18 # interface to monitor
   state MASTER # MASTER or BACKUP
@@ -25,6 +30,10 @@ vrrp_instance VI_1 {
   notify /etc/keepalived/notify_script.sh 
   virtual_ipaddress {
     x.x.x.x # virtual ip address
+  }
+
+  track_script {
+   chk_pihole
   }
 }
 ```
